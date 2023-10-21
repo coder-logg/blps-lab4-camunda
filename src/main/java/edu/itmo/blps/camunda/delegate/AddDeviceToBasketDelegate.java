@@ -29,8 +29,9 @@ public class AddDeviceToBasketDelegate implements JavaDelegate {
 		String token = (String) execution.getVariable(HttpHeaders.AUTHORIZATION);
 		if (!JwtUtils.validateAccessToken(token))
 			throw new BpmnError("jwtCorrupted");
-		Basket basket = basketService.putDeviceInBasket((Integer) execution.getVariable("deviceId"),
+		Basket basket = basketService.putFewDevicesInBasket((Integer) execution.getVariable("deviceId"),
+				(Integer) execution.getVariable("amount"),
 				JwtUtils.parseToken(token).getSubject());
-//		execution.setVariable("basket", Spin.JSON(basket));
+		execution.setVariable("basket", Spin.JSON(basket));
 	}
 }

@@ -50,16 +50,8 @@
     <bpmn:sequenceFlow id="Flow_0xz8jn8" sourceRef="Activity_160dzt3" targetRef="Gateway_000i0e9" />
     <bpmn:sequenceFlow id="Flow_09qwkvu" sourceRef="Activity_0c5l7ja" targetRef="Activity_160dzt3" />
     <bpmn:sequenceFlow id="Flow_0i9pbwi" name="no" sourceRef="Gateway_000i0e9" targetRef="Activity_0mpqx61" />
-    <bpmn:userTask id="Activity_1q7y2cz" name="Вывести результат">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="requestResult" label="Information" type="string" defaultValue="${requestResult}">
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
-          </camunda:formField>
-        </camunda:formData>
-      </bpmn:extensionElements>
+    <bpmn:userTask id="Activity_1q7y2cz" name="Вывести результат" camunda:formKey="embedded:app:forms/showTransactions.html">
+      <bpmn:extensionElements />
       <bpmn:incoming>Flow_1rpmwki</bpmn:incoming>
       <bpmn:outgoing>Flow_1iedt0h</bpmn:outgoing>
     </bpmn:userTask>

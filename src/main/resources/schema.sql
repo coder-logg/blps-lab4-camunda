@@ -60,5 +60,6 @@ create table if not exists transaction(
 	customer_id int not null references _user(id),
 	company_id int not null references company(id),
 	discount int check ( discount <= 100 and discount >= 0 ) default 0,
-	date_time timestamp default current_timestamp
+	total_price int not null,
+	date_time timestamp not null default current_timestamp
 );

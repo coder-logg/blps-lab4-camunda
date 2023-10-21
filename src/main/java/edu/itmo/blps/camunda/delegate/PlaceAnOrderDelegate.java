@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Slf4j
 public class PlaceAnOrderDelegate implements JavaDelegate {
@@ -28,8 +30,8 @@ public class PlaceAnOrderDelegate implements JavaDelegate {
 		String token = (String) execution.getVariable(HttpHeaders.AUTHORIZATION);
 		if (!JwtUtils.validateAccessToken(token))
 			throw new BpmnError("jwtCorrupted");;
-		Transaction transaction = transactionService.
-				addTransactionAndClearBasket(basketService.findByUsername(JwtUtils.parseToken(token).getSubject()));
-		execution.setVariable("requestResult", Spin.JSON(transaction));
+		List<Transaction> transactions = transactionService.
+				addMultipleTransactionsAndClearBasket(basketService.findByUsername(JwtUtils.parseToken(token).getSubject()));
+		execution.setVariable("requestResult", Spin.JSON(transactions));
 	}
 }

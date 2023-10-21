@@ -14,8 +14,6 @@ public class JwtUtils {
 	private static final String TOKEN_SECRET = Application.getApplicationContext()
 			.getEnvironment().getProperty("app.jwt.secret", "privateKey");
 
-//	private static final SecretKey accessSecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(TOKEN_SECRET));
-
 	public static String generateToken(User user){
 		return Jwts.builder()
 				.setSubject(user.getUsername())
@@ -66,6 +64,5 @@ public class JwtUtils {
 			log.error("JWT claims string is empty: {}", e.getMessage());
 			throw e;
 		}
-//		return false;
 	}
 }

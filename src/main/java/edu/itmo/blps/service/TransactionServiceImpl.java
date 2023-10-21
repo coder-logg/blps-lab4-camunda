@@ -8,14 +8,19 @@ import edu.itmo.blps.model.transaction.Transaction;
 import edu.itmo.blps.model.transaction.TransactionRepository;
 import edu.itmo.blps.model.user.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 	private final UserService userService;
 	private final TransactionRepository transactionRepository;
@@ -23,24 +28,46 @@ public class TransactionServiceImpl implements TransactionService {
 	private final BasketService basketService;
 
 	@Transactional
-	public Transaction addTransactionAndClearBasket(Basket basket){
-		Transaction transaction = addTransactionForOneCompany(basket);
+	public Transaction addSingleTransactionAndClearBasket(Basket basket){
+		Transaction transaction = addSingleCompanyTransaction(
+				deviceService.getDevice(basket.getDevicesIds().get(0)).getCompany(),
+				basket.getCustomer(),
+				basket.getDevices());
 		basketService.clearBasket(basket.getCustomer().getUsername());
 		return transaction;
 	}
 
-	public Transaction addMultipleCompanyTransaction(){return null;}
+	@Transactional
+	public List<Transaction> addMultipleTransactionsAndClearBasket(Basket basket){
+		Map<Company, Map<Integer, Integer>> collect = basket.getDevices().keySet().stream()
+				.map(deviceService::getDevice)
+				.collect(Collectors.groupingBy(Device::getCompany,
+						Collectors.toMap(Device::getId, a -> basket.getDevices().get(a.getId()))));
+		List<Transaction> transactions = addMultipleCompanyTransaction(collect,basket.getCustomer());
+		basketService.clearBasket(basket.getCustomer().getUsername());
+		return transactions;
+	}
 
 	@Transactional
-	public Transaction addTransactionForOneCompany(Basket basket){
-//		Map<Integer, Integer> deviceIds = basket.getDevices();
-		Company company = basket.getDevices().get(0).getCompany();
+	public List<Transaction> addMultipleCompanyTransaction(
+			Map<Company, Map<Integer, Integer>> companyDevicesAmounts, Customer customer){
+		List<Transaction> result = new ArrayList<>();
+		companyDevicesAmounts.keySet().forEach(a -> {
+			result.add(addSingleCompanyTransaction(a, customer, companyDevicesAmounts.get(a)));
+		});
+		return result;
+	}
+
+	@Transactional
+	public Transaction addSingleCompanyTransaction(Company company, Customer customer, Map<Integer, Integer> devicesAmounts){
 		Transaction transaction = Transaction.builder()
-				.customer(basket.getCustomer())
+				.customer(customer)
 				.company(company)
 				.discount(0)
-				.devices(basket.getDevices())
+				.devices(devicesAmounts)
+				.dateTime(new Date())
 				.build();
+		log.info("new transaction will be added: {}", transaction);
 		return addTransaction(transaction);
 	}
 

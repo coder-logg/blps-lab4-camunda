@@ -1,0 +1,54 @@
+<form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Transaction ID</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Company</th>
+            <th scope="col">Devices</th>
+            <th scope="col">Discount %</th>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+    <script cam-script type="text/form-script">
+<!--    <script>-->
+    var variableManager = camForm.variableManager;
+    var reqResult = null;
+    var devices = null;
+
+    camForm.on('form-loaded', function() {
+      variableManager.fetchVariable('requestResult');
+      variableManager.fetchVariable('devices');
+    });
+
+    camForm.on('variables-fetched', function() {
+      reqResult = Object.entries(variableManager.variableValue('requestResult'));
+      devices = new Map(Object.entries(variableManager.variableValue('devices')));
+      console.log("result");
+      console.log(reqResult);
+      console.log(devices);
+
+      reqResult.forEach(a => {
+          a = a.at(1);
+          var tr = document.createElement("tr");
+          tr.appendChild(document.createElement("th")).textContent = a.id;
+          tr.appendChild(document.createElement("th")).textContent = a.customer.username;
+          tr.appendChild(document.createElement("th")).textContent = a.company.name;
+          a.devices = new Map(Object.entries(a.devices));
+
+          var devicesNames = document.createElement("th");
+          a.devices.forEach((v, k) => {
+              devicesNames.innerHTML += " " + devices.get(k);
+              devicesNames.innerHTML += " : " + v + "<br />";
+          });
+          tr.appendChild(devicesNames);
+
+          tr.appendChild(document.createElement("th")).textContent = a.discount;
+          $("#table-body").append(tr);
+          console.log(a);
+      });
+    });
+    </script>
+</form>

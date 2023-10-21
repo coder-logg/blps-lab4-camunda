@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Service
 //@Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
@@ -49,75 +51,33 @@ public class BasketService {
 		return basketRepository.save(newBasket);
 	}
 
-//	public Map<Device, Integer> getAllDevices(String username){
-//		Map<Integer, Integer> ids = findByUsername(username).getDevices();
-//		Map<Device, Integer> res = new HashMap<>();
-//		ids.forEach((k, v) -> res.put(deviceService.getDevice(k), v));
-//		return res;
-//	}
-
 	public Basket findByUsername(String username) {
 		return basketRepository.findByCustomer_Username(username)
 				.orElseThrow(() -> new EntityNotFoundException("Cart was not found for this username=" + username));
 	}
 
 	@Transactional
-	public Basket putDeviceInBasket(Device device, String username) {
-		Basket basket = basketRepository.findByCustomer_Username(username).orElseGet(() -> createBasketForCustomerUsername(username));
-		basket.addDevice(deviceService.findDevice(device));
+	public <T> Basket putDeviceInBasket(T device, String username, Function<T, Device> func) {
+		Basket basket = createBasketIfAbsent(username);
+		basket.addDevice(func.apply(device));
 		return basketRepository.save(basket);
 	}
-
-	public Basket putDeviceInBasket(Integer deviceId, String username) {
-		Basket basket = basketRepository.findByCustomer_Username(username).orElseGet(() -> createBasketForCustomerUsername(username));
-		basket.addDevice(deviceService.getDevice(deviceId));
-		return basketRepository.save(basket);
-	}
-
-//	@Transactional
-//	public Basket removeDeviceFromBasket(Device device, String username) {
-//		device = deviceService.findDevice(device);
-//		Basket basket = findByUsername(username);
-//		if (basket.getDevices().contains(device)) {
-//			basket.removeDevice(device);
-//			return basketRepository.save(basket);
-//		}
-//		else
-//			throw new EntityNotFoundException("Cart doesn't contain device: " + device);
-//	}
 
 	@Transactional
-//	@PreAuthorize("#principal.username == username")
+	public Basket putFewDevicesInBasket(Integer deviceId, Integer amount, String username) {
+		return basketRepository.save(createBasketIfAbsent(username)
+				.addFewDevices(deviceService.getDevice(deviceId), amount).updateTotalPrice(deviceService));
+	}
+
+	@Transactional
+	public Basket createBasketIfAbsent(String username) {
+		return basketRepository.findByCustomer_Username(username).orElseGet(() -> createBasketForCustomerUsername(username));
+	}
+
+	@Transactional
 	public Basket clearBasket(String username){
 		Basket basket = findByUsername(username);
-		basket.getDevices().clear();
+		basket.clear();
 		return basketRepository.save(basket);
 	}
-	
-	
-//	public boolean existDeviceInBasket(Integer deviceId, String username) {
-//		return findByUsername(username).getDevices().contains(deviceService.getDevice(deviceId));
-//	}
-//
-//	public Optional<Device> getDeviceIfPresentInBasket(Integer deviceId, String username) {
-//		Device deviceFromDb = deviceService.getDevice(deviceId);
-//		if (Objects.isNull(deviceFromDb))
-//			return Optional.empty();
-//		Basket basket = findByUsername(username);
-//		if (basket.getDevices().contains(deviceFromDb))
-//			return Optional.of(deviceFromDb);
-//		return Optional.empty();
-//	}
-//
-//	@Transactional
-//	public Basket removeDeviceFromBasket(Integer deviceId, String username) {
-//		Basket basket = findByUsername(username);
-//		Device device = deviceService.getDeviceOrThrow(deviceId);
-//		if (basket.getDevices().contains(device)) {
-//			basket.removeDevice(device);
-//			return basketRepository.save(basket);
-//		}
-//		else
-//			throw new EntityNotFoundException("Cart doesn't contain device: " + deviceId);
-//	}
 }
