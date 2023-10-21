@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ie97e0" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.10.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:collaboration id="Collaboration_0eaokjv">
+    <bpmn:participant id="Participant_0guq8s7" name="Заказ товаров" processRef="Process_0pmqjul" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0pmqjul" isExecutable="true" camunda:historyTimeToLive="1000">
+    <bpmn:laneSet id="LaneSet_10cvrbz">
+      <bpmn:lane id="Lane_0l8nosb" name="Сервер">
+        <bpmn:flowNodeRef>Activity_06apd3i</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_021mkka</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0mpqx61</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0wsug20" name="Покупатель">
+        <bpmn:flowNodeRef>Activity_0ltsetq</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0c5l7ja</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:userTask id="Activity_0ltsetq" name="Заказать товары из корзины">
+      <bpmn:incoming>Flow_0u1yfvv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0wk3rx8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_06apd3i" name="Сохранить заказ в БД" camunda:delegateExpression="${addDeviceToBasketDelegate}">
+      <bpmn:incoming>Flow_0wk3rx8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rbbidm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_021mkka" name="Послать сообщения покупателю и продавцу" camunda:delegateExpression="${sendEmailsDelegate}">
+      <bpmn:incoming>Flow_1rbbidm</bpmn:incoming>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_00li3dq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_0c5l7ja" name="Положить товар в корзину" camunda:formKey="camunda-forms:/forms/selectDevice.form">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_00li3dq</bpmn:incoming>
+      <bpmn:incoming>Flow_0qtdf8u</bpmn:incoming>
+      <bpmn:outgoing>Flow_0u1yfvv</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_0mpqx61" name="Достать список товаров из БД" camunda:delegateExpression="${loadDevicesDelegate}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="devices">${devices}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0qtdf8u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0u1yfvv" sourceRef="Activity_0c5l7ja" targetRef="Activity_0ltsetq" />
+    <bpmn:sequenceFlow id="Flow_0wk3rx8" sourceRef="Activity_0ltsetq" targetRef="Activity_06apd3i" />
+    <bpmn:sequenceFlow id="Flow_1rbbidm" sourceRef="Activity_06apd3i" targetRef="Activity_021mkka" />
+    <bpmn:sequenceFlow id="Flow_00li3dq" sourceRef="StartEvent_1" targetRef="Activity_0c5l7ja" />
+    <bpmn:sequenceFlow id="Flow_0qtdf8u" sourceRef="Activity_0mpqx61" targetRef="Activity_0c5l7ja" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0eaokjv">
+      <bpmndi:BPMNShape id="Participant_0guq8s7_di" bpmnElement="Participant_0guq8s7" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1130" height="440" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0l8nosb_di" bpmnElement="Lane_0l8nosb" isHorizontal="true">
+        <dc:Bounds x="190" y="330" width="1100" height="190" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0wsug20_di" bpmnElement="Lane_0wsug20" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1100" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0s2hzc2_di" bpmnElement="Activity_0ltsetq">
+        <dc:Bounds x="560" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0n5co3s_di" bpmnElement="Activity_06apd3i">
+        <dc:Bounds x="560" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1igh86n_di" bpmnElement="Activity_021mkka">
+        <dc:Bounds x="780" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jxz0k5_di" bpmnElement="Activity_0c5l7ja">
+        <dc:Bounds x="370" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ydi3if_di" bpmnElement="Activity_0mpqx61">
+        <dc:Bounds x="370" y="379" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0u1yfvv_di" bpmnElement="Flow_0u1yfvv">
+        <di:waypoint x="470" y="220" />
+        <di:waypoint x="560" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wk3rx8_di" bpmnElement="Flow_0wk3rx8">
+        <di:waypoint x="610" y="260" />
+        <di:waypoint x="610" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rbbidm_di" bpmnElement="Flow_1rbbidm">
+        <di:waypoint x="660" y="420" />
+        <di:waypoint x="780" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00li3dq_di" bpmnElement="Flow_00li3dq">
+        <di:waypoint x="278" y="220" />
+        <di:waypoint x="370" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qtdf8u_di" bpmnElement="Flow_0qtdf8u">
+        <di:waypoint x="420" y="379" />
+        <di:waypoint x="420" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

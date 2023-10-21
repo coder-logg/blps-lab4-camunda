@@ -1,0 +1,67 @@
+{
+  "components": [
+    {
+      "label": "Device name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_01o3fk1",
+        "columns": null
+      },
+      "id": "Field_07nt2yz",
+      "key": "name",
+      "validate": {
+        "required": true,
+        "minLength": 3
+      }
+    },
+    {
+      "label": "Price",
+      "type": "number",
+      "layout": {
+        "row": "Row_1akaiqp",
+        "columns": null
+      },
+      "id": "Field_18obk13",
+      "key": "price",
+      "defaultValue": 100,
+      "validate": {
+        "min": 1,
+        "required": true
+      }
+    },
+    {
+      "label": "Category",
+      "type": "select",
+      "layout": {
+        "row": "Row_0lwj5ld",
+        "columns": null
+      },
+      "id": "Field_0jv7t16",
+      "key": "category",
+      "searchable": false,
+      "validate": {
+        "required": true
+      },
+      "valuesKey": "categories"
+    },
+    {
+      "label": "Description",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1hhcozu",
+        "columns": null
+      },
+      "id": "Field_1b8w8yd",
+      "key": "decription"
+    }
+  ],
+  "type": "default",
+  "id": "defineDevice_form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.10.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

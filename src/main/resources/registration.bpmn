@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1mspcbs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.10.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:collaboration id="Registration">
+    <bpmn:participant id="Participant_1wuuxej" name="Регистрация" processRef="Registration_proccess" />
+  </bpmn:collaboration>
+  <bpmn:process id="Registration_proccess" isExecutable="true" camunda:historyTimeToLive="1000">
+    <bpmn:laneSet id="LaneSet_1n0cyeq">
+      <bpmn:lane id="Lane_17l8te6" name="Клиент">
+        <bpmn:flowNodeRef>customer_registration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0tdnn0l</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1txzl8b</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>seller_registration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1c5drx9</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_06o5zg3" name="Сервер">
+        <bpmn:flowNodeRef>Activity_1tv4x5m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_035s923</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:userTask id="customer_registration" name="Заполнить форму регистрации Покупателя" camunda:formKey="camunda-forms:/forms/customerRegistration.form">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_01g2iuk</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xowvv9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="role" label="Role" type="enum">
+            <camunda:properties />
+            <camunda:validation>
+              <camunda:constraint name="required" config="true" />
+            </camunda:validation>
+            <camunda:value id="CUSTOMER" name="customer" />
+            <camunda:value id="COMPANY" name="seller" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0fq3xnt</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_0tdnn0l">
+      <bpmn:incoming>Flow_0fq3xnt</bpmn:incoming>
+      <bpmn:incoming>Flow_0wnw761</bpmn:incoming>
+      <bpmn:outgoing>Flow_01g2iuk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1frii4e</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_1txzl8b">
+      <bpmn:incoming>Flow_1xowvv9</bpmn:incoming>
+      <bpmn:incoming>Flow_02vxley</bpmn:incoming>
+      <bpmn:outgoing>Flow_1f9ofoe</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="seller_registration" name="Заполнить форму регистрации Продавца" camunda:formKey="camunda-forms:/forms/companyRegistration.form">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1frii4e</bpmn:incoming>
+      <bpmn:outgoing>Flow_02vxley</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_1c5drx9" name="End">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0czbci6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_1tv4x5m" name="Сохранение пользователя в БД" camunda:delegateExpression="${registrationDelegate}">
+      <bpmn:incoming>Flow_1f9ofoe</bpmn:incoming>
+      <bpmn:outgoing>Flow_0czbci6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_035s923" name="Registration Error" attachedToRef="Activity_1tv4x5m">
+      <bpmn:outgoing>Flow_0wnw761</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1uwgtr4" errorRef="Error_17tylka" camunda:errorCodeVariable="registrationError" camunda:errorMessageVariable="registrationErrorMsg" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_01g2iuk" sourceRef="Gateway_0tdnn0l" targetRef="customer_registration">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('role') == 'CUSTOMER'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1xowvv9" sourceRef="customer_registration" targetRef="Gateway_1txzl8b" />
+    <bpmn:sequenceFlow id="Flow_0fq3xnt" sourceRef="StartEvent_1" targetRef="Gateway_0tdnn0l">
+      <bpmn:extensionElements />
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0wnw761" sourceRef="Event_035s923" targetRef="Gateway_0tdnn0l" />
+    <bpmn:sequenceFlow id="Flow_1frii4e" sourceRef="Gateway_0tdnn0l" targetRef="seller_registration">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('role') == 'COMPANY'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_02vxley" sourceRef="seller_registration" targetRef="Gateway_1txzl8b" />
+    <bpmn:sequenceFlow id="Flow_1f9ofoe" sourceRef="Gateway_1txzl8b" targetRef="Activity_1tv4x5m" />
+    <bpmn:sequenceFlow id="Flow_0czbci6" sourceRef="Activity_1tv4x5m" targetRef="Event_1c5drx9" />
+  </bpmn:process>
+  <bpmn:error id="Error_17tylka" name="registrationError" errorCode="registrationError" camunda:errorMessage="registrationError" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Registration">
+      <bpmndi:BPMNShape id="Participant_1wuuxej_di" bpmnElement="Participant_1wuuxej" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1298" height="560" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_06o5zg3_di" bpmnElement="Lane_06o5zg3" isHorizontal="true">
+        <dc:Bounds x="190" y="445" width="1268" height="195" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_17l8te6_di" bpmnElement="Lane_17l8te6" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1268" height="365" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s9tis1_di" bpmnElement="customer_registration">
+        <dc:Bounds x="458" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="250" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0tdnn0l_di" bpmnElement="Gateway_0tdnn0l" isMarkerVisible="true">
+        <dc:Bounds x="327" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1txzl8b_di" bpmnElement="Gateway_1txzl8b" isMarkerVisible="true">
+        <dc:Bounds x="623" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hanno2_di" bpmnElement="seller_registration">
+        <dc:Bounds x="458" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1c5drx9_di" bpmnElement="Event_1c5drx9">
+        <dc:Bounds x="1070" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1078" y="178" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oks9vx_di" bpmnElement="Activity_1tv4x5m">
+        <dc:Bounds x="698" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0f1c1xs_di" bpmnElement="Event_035s923">
+        <dc:Bounds x="760" y="502" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="794" y="493" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01g2iuk_di" bpmnElement="Flow_01g2iuk">
+        <di:waypoint x="352" y="235" />
+        <di:waypoint x="352" y="170" />
+        <di:waypoint x="458" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xowvv9_di" bpmnElement="Flow_1xowvv9">
+        <di:waypoint x="558" y="170" />
+        <di:waypoint x="648" y="170" />
+        <di:waypoint x="648" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fq3xnt_di" bpmnElement="Flow_0fq3xnt">
+        <di:waypoint x="286" y="260" />
+        <di:waypoint x="327" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wnw761_di" bpmnElement="Flow_0wnw761">
+        <di:waypoint x="778" y="502" />
+        <di:waypoint x="778" y="100" />
+        <di:waypoint x="352" y="100" />
+        <di:waypoint x="352" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1frii4e_di" bpmnElement="Flow_1frii4e">
+        <di:waypoint x="352" y="285" />
+        <di:waypoint x="352" y="340" />
+        <di:waypoint x="458" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02vxley_di" bpmnElement="Flow_02vxley">
+        <di:waypoint x="558" y="340" />
+        <di:waypoint x="648" y="340" />
+        <di:waypoint x="648" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1f9ofoe_di" bpmnElement="Flow_1f9ofoe">
+        <di:waypoint x="673" y="260" />
+        <di:waypoint x="728" y="260" />
+        <di:waypoint x="728" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0czbci6_di" bpmnElement="Flow_0czbci6">
+        <di:waypoint x="798" y="560" />
+        <di:waypoint x="1088" y="560" />
+        <di:waypoint x="1088" y="238" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

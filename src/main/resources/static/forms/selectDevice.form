@@ -1,0 +1,93 @@
+{
+  "components": [
+    {
+      "text": "# Выберете устройство",
+      "type": "text",
+      "layout": {
+        "row": "Row_0xtob2n",
+        "columns": null
+      },
+      "id": "Field_0l03djh"
+    },
+    {
+      "label": "Company",
+      "type": "select",
+      "layout": {
+        "row": "Row_0qnxslc",
+        "columns": null
+      },
+      "id": "Field_02v2o9o",
+      "key": "company",
+      "validate": {
+        "required": true
+      },
+      "valuesKey": "companies",
+      "disabled": true
+    },
+    {
+      "label": "Товар",
+      "type": "select",
+      "layout": {
+        "row": "Row_1as7pm1",
+        "columns": null
+      },
+      "id": "Field_0jobeg4",
+      "key": "deviceId",
+      "valuesKey": "${devices}",
+      "searchable": false,
+      "properties": {},
+      "disabled": false,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Amount",
+      "type": "number",
+      "layout": {
+        "row": "Row_0l4l4fj",
+        "columns": null
+      },
+      "id": "Field_086dbid",
+      "key": "amount",
+      "defaultValue": 1,
+      "validate": {
+        "required": true,
+        "min": 1
+      }
+    },
+    {
+      "values": [
+        {
+          "label": "Place order",
+          "value": "yes"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_07up8xx",
+        "columns": null
+      },
+      "id": "Field_1v2ui7q",
+      "key": "isFinished"
+    },
+    {
+      "text": "{{basket}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_0vevvz1",
+        "columns": null
+      },
+      "id": "Field_1coac3g"
+    }
+  ],
+  "type": "default",
+  "id": "chooseDevice",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.10.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

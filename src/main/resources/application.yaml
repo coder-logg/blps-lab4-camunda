@@ -1,0 +1,105 @@
+app:
+  jwt:
+    secret: asvUp19m2wq/E+rWWVaLxpXmZ+I0d75PuWTvDUMI3tM=
+
+logging:
+  level:
+    root: DEBUG
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    hikari:
+      auto-commit: true
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  sql:
+    init:
+      platform: postgres
+
+  jersey:
+    application-path:
+#      transaction:
+#        factory_class: bitronix.tm.BitronixTransactionManager
+#  jpa:
+#    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+#    hibernate:
+#      connection:
+#        handling_mode: DELAYED_ACQUISITION_AND_RELEASE_AFTER_STATEMENT
+#      ddl-auto: none
+#      hibernate:
+#        transaction:
+#          factory_class: bitronix.tm.BitronixTransactionManager
+#      transaction:
+#        coordinator_class: jta
+#    show-sql: true
+#  jta:
+#    bitronix:
+#      datasource:
+#        local-auto-commit: false
+#    enabled: true
+#    bitronix:
+#      datasource:
+#        local-auto-commit: false
+#      tm:
+#        resource:
+#          bind: true
+#          ds1:
+#            className: org.postgresql.Driver
+#            uniqueName: postgres
+#            maxPoolSize: 5
+#            driverProperties:
+#              user: postgres
+#              password: postgres
+#              URL: jdbc:postgresql://localhost:5432/postgres?autoReconnect=true&currentSchema=blps
+#          ds2:
+#            className: org.postgresql.Driver
+#            uniqueName: camunda
+#            maxPoolSize: 5
+#            driverProperties:
+#              user: postgres
+#              password: postgres
+#              URL: jdbc:postgresql://localhost:5432/postgres?autoReconnect=true&currentSchema=camunda
+#  sql:
+#    init:
+#      mode: always
+#      platform: postgresql
+#      schema-locations: classpath*:schema.sql
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    virtual-host: /
+#    username: guest
+#    password: guest
+#    template:
+#      exchange: amq.topic
+#      routing-key: mailbox
+#  mqtt:
+#    username: guest
+#    password: guest
+#    url: tcp://127.0.0.1:1883
+#    client:
+#      id: main-service
+#    default:
+#      topic: mailbox
+#    completionTimeout: 3000
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+    database:
+      schema-update: true
+      type: postgres
+#    webapp:
+#      index-redirect-enabled: false
